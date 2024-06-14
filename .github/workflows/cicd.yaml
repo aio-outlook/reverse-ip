@@ -3,7 +3,13 @@ name: Docker Build & Deploy
 on:
   push:
     branches:
-      - main
+      - dev
+
+# Environment files.
+env:
+    RUN_REGION: europe-west3
+    SERVICE_NAME: reversed-ip-app
+    DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME }}
 
 jobs:
   build:
@@ -19,10 +25,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Build Docker image
-        run: docker build -t your-docker-username/fastapi-app:latest .
+        run: docker build -t ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:latest .
       
       - name: Push Docker image
-        run: docker push your-docker-username/fastapi-app:latest
+        run: docker push ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:latest
       
   deploy:
     runs-on: ubuntu-latest
@@ -41,4 +47,4 @@ jobs:
         run: cp kubeconfig $HOME/.kube/config
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f helm-charts/fastapi-app/templates/deployment.yaml
+        run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml
