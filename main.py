@@ -59,7 +59,7 @@ def get_db():
 async def store_reversed_origin_ip(request: Request, db: Session = Depends(get_db)):
     client_ip = request.client.host  # Get client's IP address
     proxy_context = context.data["X-Forwarded-For"]
-    logging.error(f"Proxy Data: {proxy_context}")
+    logging.error(f"Proxy Data: {type(proxy_context)}")
     
     if client_ip is None:
         raise HTTPException(status_code=400, detail="Cannot retrieve client IP")
