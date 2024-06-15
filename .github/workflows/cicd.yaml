@@ -61,4 +61,4 @@ jobs:
         run: ls -a
 
       - name: Deploy to Kubernetes
-        run: helm upgrade --install ${{env.SERVICE_NAME}} helm-chart/${{env.SERVICE_NAME}}/templates/deployment.yaml --namespace dev
+        run: helm upgrade --install ${{env.SERVICE_NAME}} helm-chart/${{env.SERVICE_NAME}} --namespace dev
