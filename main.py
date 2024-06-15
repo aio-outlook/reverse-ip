@@ -58,7 +58,7 @@ def get_db():
 @app.get("/", response_model=ReversedIPResponse)
 async def store_reversed_origin_ip(request: Request, db: Session = Depends(get_db)):
     client_ip = request.client.host  # Get client's IP address
-    proxy_context = context.data["X-Forwarded-For"]
+    proxy_context = context.data
     logging.error(f"Proxy Data: {proxy_context}")
     
     if client_ip is None:
