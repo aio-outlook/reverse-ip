@@ -33,6 +33,20 @@ service:
   port: 80
   targetPort: 8000
 
+nginx-ingress:
+  controller:
+    service:
+      enabled: true
+      type: LoadBalancer  # Adjust as per your cluster setup
+    ingressClass: nginx
+    publishService:
+      enabled: true
+    use-forwarded-headers: "true"  # Enable forwarded headers support
+    externalTrafficPolicy: Local  # Ensures client IP is preserved
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-protocol: "True"
+      nginx.ingress.kubernetes.io/real-ip-header: "proxy_protocol"
+
 ingress:
   enabled: false
   className: ""

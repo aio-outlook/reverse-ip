@@ -29,3 +29,7 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+                    # Example of reading real client IP from headers
+          envFrom:
+            - configMapRef:
+                name: nginx-ingress-controller-microk8s
