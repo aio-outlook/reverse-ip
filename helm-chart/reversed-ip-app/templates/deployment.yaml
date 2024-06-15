@@ -24,6 +24,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 8000
+            - name: web
+              containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
