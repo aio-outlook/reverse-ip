@@ -31,20 +31,24 @@ jobs:
         run: docker push ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:latest
       
   deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Install kubectl
-        uses: docker://lachlanevenson/k8s-kubectl
-        with:
-          args: install --kubectl-version=v1.23.0
+    name: Deploy kube
+    runs-on: ubuntu-latest  
 
-      - name: Configure kubectl
-        run: echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > kubeconfig
-      - name: Set kubeconfig permissions
-        run: chmod 600 kubeconfig
-      - name: Copy kubeconfig to its default location
-        run: cp kubeconfig $HOME/.kube/config
+    steps:
+      # Configure Cloud SDK
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GCLOUD_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          export_default_credentials: true
+
+      # Configure Cloud GKE SDK.
+      - name: Setup GKE CLI
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ needs.variables.outputs.cluster }}
+          location: ${{ needs.variables.outputs.cluster_zone }}
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml
