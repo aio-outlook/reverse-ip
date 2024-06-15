@@ -36,7 +36,11 @@ jobs:
     name: Deploy kube
     runs-on: ubuntu-latest  
 
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       # Configure Cloud SDK
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@v0
@@ -52,5 +56,8 @@ jobs:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.CLUSTER_ZONE }}
 
-      - name: Deploy to Kubernetes
+      - name: Run ls
         run: ls -a
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml -n dev
