@@ -12,6 +12,7 @@ env:
     DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME }}
     CLUSTER_NAME: ${{secrets.CLUSTER }}
     CLUSTER_ZONE: ${{secrets.CLUSTER_ZONE }}
+    APP_VERSION: latest # Default version, can be overridden
 
 jobs:
   build:
@@ -27,10 +28,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Build Docker image
-        run: docker build -t ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:latest .
+        run: docker build -t ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:${{ github.sha }} .
       
       - name: Push Docker image
-        run: docker push ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:latest
+        run: docker push ${{ env.DOCKER_USERNAME }}/${{env.SERVICE_NAME}}:${{ github.sha }}
       
   deploy:
     name: Deploy kube
@@ -61,4 +62,4 @@ jobs:
         run: ls -a
 
       - name: Deploy to Kubernetes
-        run: helm upgrade --install ${{env.SERVICE_NAME}} helm-chart/${{env.SERVICE_NAME}} --namespace dev
+        run: helm upgrade --install ${{env.SERVICE_NAME}} helm-chart/${{env.SERVICE_NAME}} --namespace dev --set image.tag=${{ github.sha }}
