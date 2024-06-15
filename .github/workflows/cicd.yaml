@@ -53,4 +53,4 @@ jobs:
           location: ${{ env.CLUSTER_ZONE }}
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml -n dev
+        run: ls -a
