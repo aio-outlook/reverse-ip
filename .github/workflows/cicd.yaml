@@ -10,6 +10,8 @@ env:
     RUN_REGION: europe-west3
     SERVICE_NAME: reversed-ip-app
     DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME }}
+    CLUSTER_NAME: ${{secrets.CLUSTER }}
+    CLUSTER_ZONE: ${{secrets.CLUSTER_ZONE }}
 
 jobs:
   build:
@@ -40,15 +42,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           service_account_key: ${{ secrets.GCLOUD_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ secrets.PROJECT_ID }}
           export_default_credentials: true
 
       # Configure Cloud GKE SDK.
       - name: Setup GKE CLI
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: ${{ needs.variables.outputs.cluster }}
-          location: ${{ needs.variables.outputs.cluster_zone }}
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.CLUSTER_ZONE }}
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml -n dev
