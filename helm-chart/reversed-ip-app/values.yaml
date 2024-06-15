@@ -29,7 +29,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
   targetPort: 8000
 
@@ -48,16 +48,22 @@ nginx-ingress:
       nginx.ingress.kubernetes.io/real-ip-header: "proxy_protocol"
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
+  enabled: true
+  className: "reversed-ip-app"
+  annotations: 
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-protocol: "True"
   hosts:
-    - host: chart-example.local
+    - host: reverseip.motoyakouture.org
       paths:
         - path: /
           pathType: ImplementationSpecific
+          backend:
+            service:
+              name: reversed-ip-app
+              port:
+                number: 80
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

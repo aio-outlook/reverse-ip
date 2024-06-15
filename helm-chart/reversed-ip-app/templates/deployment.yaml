@@ -32,4 +32,4 @@ spec:
                     # Example of reading real client IP from headers
           envFrom:
             - configMapRef:
-                name: nginx-ingress-controller-microk8s
+                name: reversed-ip-app-ingress-nginx-controller
