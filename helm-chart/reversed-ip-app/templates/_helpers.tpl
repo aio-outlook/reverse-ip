@@ -49,14 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "reversed-ip-app.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "reversed-ip-app.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "reversed-ip-app.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
