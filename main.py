@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+from fastapi.templating import Jinja2Templates
 import logging
 
 # SQLAlchemy setup
@@ -22,6 +23,9 @@ class ReversedIP(Base):
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
+
+# Jinja2 templates setup
+templates = Jinja2Templates(directory="templates")
 
 # FastAPI app instance
 app = FastAPI()
@@ -43,18 +47,8 @@ def get_db():
         db.close()
 
 # FastAPI endpoint to store reversed IP in database
-@app.post("/store_reversed_origin_ip/", response_model=ReversedIPResponse)
+@app.get("/", response_model=ReversedIPResponse)
 async def store_reversed_origin_ip(request: Request, db: Session = Depends(get_db)):
-    """
-    FastAPI endpoint to store reversed IP address in the database.
-
-    Args:
-    - request (Request): Incoming HTTP request.
-    - db (Session): SQLAlchemy database session (dependency injected).
-
-    Returns:
-    - dict: JSON response with the reversed IP address.
-    """
     client_ip = request.client.host  # Get client's IP address
     
     if client_ip is None:
@@ -77,7 +71,8 @@ async def store_reversed_origin_ip(request: Request, db: Session = Depends(get_d
         logging.error(f"Error storing reversed IP: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-    return {"reversed_ip": reversed_ip}
+    return templates.TemplateResponse("index.html", {"request": request, "reversed_ip": reversed_ip})
+
 
 if __name__ == "__main__":
     import uvicorn
