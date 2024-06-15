@@ -35,6 +35,7 @@ jobs:
   deploy:
     name: Deploy kube
     runs-on: ubuntu-latest  
+    needs: [build]
 
 
     steps:
@@ -60,4 +61,4 @@ jobs:
         run: ls -a
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f helm-charts/${{env.SERVICE_NAME}}/templates/deployment.yaml -n dev
+        run: kubectl apply -f helm-chart/${{env.SERVICE_NAME}}/templates/deployment.yaml -n dev
