@@ -54,12 +54,25 @@ def get_db():
     finally:
         db.close()
 
+def get_first_ip(ip_list: str) -> str:
+    """
+    Splits the input string by commas and returns the first IP address.
+    
+    :param ip_list: A string containing multiple IP addresses separated by commas.
+    :return: The first IP address.
+    """
+    ip_addresses = ip_list.split(',')
+    return ip_addresses[0].strip() if ip_addresses else None
+
+
 # FastAPI endpoint to store reversed IP in database
 @app.get("/", response_model=ReversedIPResponse)
 async def store_reversed_origin_ip(request: Request, db: Session = Depends(get_db)):
-    client_ip = request.client.host  # Get client's IP address
-    proxy_context = context.data["X-Forwarded-For"]
-    logging.error(f"Proxy Data: {type(proxy_context)}")
+    ip_list = context.data["X-Forwarded-For"] or request.client.host  # Get client's IP address
+    
+    client_ip = get_first_ip(ip_list)
+    
+    logging.error(client_ip)
     
     if client_ip is None:
         raise HTTPException(status_code=400, detail="Cannot retrieve client IP")
